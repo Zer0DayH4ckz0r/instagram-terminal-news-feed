@@ -72,16 +72,6 @@ def get_login_session(credential):
     req = session.get('https://www.instagram.com/')
     session.headers.update({'X-CSRFToken': req.cookies['csrftoken']})
     login_response = session.post('https://www.instagram.com/accounts/login/ajax/', data=credential, allow_redirects=True).json()
-    if 'two_factor_required' in login_response and login_response['two_factor_required']:
-        identifier = login_response['two_factor_info']['two_factor_identifier']
-        username = credential['username']
-        verification_code = input('2FA Verification Code: ')
-        verification_data = {'username': username, 'verificationCode': verification_code, 'identifier': identifier}
-        two_factor_response = session.post('https://www.instagram.com/accounts/login/ajax/two_factor/', data=verification_data, allow_redirects=True).json()
-        if two_factor_response['authenticated']:
-            return session, two_factor_response
-        else:
-            return None, two_factor_response
     return session, login_response
 
 def login(credential):
